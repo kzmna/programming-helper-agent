@@ -1,0 +1,66 @@
+"""Quiz Agent implementation."""
+
+from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
+from langchain_core.prompts import ChatPromptTemplate
+import os
+
+from tools.quiz_tools import (
+    create_quiz,
+    list_quizzes,
+    load_quiz,
+    grade_quiz,
+)
+
+from tools.transfer_tools import (
+    complete_and_respond,
+    ask_user_for_input,
+    transfer_to_helper,
+    transfer_to_architecture,
+)
+
+
+def load_system_prompt() -> str:
+    """Load system prompt from file."""
+    prompt_path = os.path.join("prompts", "quiz_agent_prompt.md")
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def create_quiz_agent(llm: ChatOpenAI, checkpointer):
+    """Create the Quiz Agent with its tools.
+
+    Args:
+        llm: Language model instance
+        checkpointer: Checkpointer for memory
+
+    Returns:
+        Configured ReAct agent
+    """
+    tools = [
+        # quiz tools
+        create_quiz,
+        list_quizzes,
+        load_quiz,
+        grade_quiz,
+        # optional handoff (if user wants explanation or architecture after quiz)
+        transfer_to_helper,
+        transfer_to_architecture,
+        # interaction
+        complete_and_respond,
+        ask_user_for_input,
+    ]
+
+    system_prompt = load_system_prompt()
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("placeholder", "{messages}"),
+    ])
+
+    return create_react_agent(
+        model=llm,
+        tools=tools,
+        checkpointer=checkpointer,
+        state_modifier=prompt,
+    )
