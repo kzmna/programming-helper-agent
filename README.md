@@ -1,7 +1,7 @@
 # Multi-Agent Programming Assistant
 Система для помощи в программировании. Система помогает анализировать код, объяснять ошибки, предлагать исправлен. Маршрутизатор решает кому передатьуправление.
 
-## System Overview
+## Общая информация
 ### Агенты
 1) **Router Agent (маршрутизатор)**
 - Классифицирует запрос: *код / архитектура / план / смешанный*.
@@ -16,6 +16,9 @@
  - Предлагает структуру модулей, классов, API.
  - После проектирования передаёт управление Code Helper Agent для реализации
 
+ 4) **Quiz Agent**
+ - Создаёт квиз по непонятной для пользователя теме
+
  ---
 ## Паттерн мультиагентной системы
 Используемый паттерн:
@@ -24,7 +27,7 @@
 - **Handoff между агентами**
 ---
 ## Диаграмма работы системы
-ТУТ ФОТКА
+![alt text](docs\image.png)
 
  ### Тулы 
  Агенты могут вызывать Python-инструменты:
@@ -35,13 +38,17 @@
 - **search_notes(query)** - поиск по памяти.
 - **transfer_to_helper** - передача Code Helper Agent
 - **transfer_to_architecture** - передача rchitecture Agent
+- **list_quizzes** - показывает последние сохранённые квизы (id, тема, сложность, дата, количество вопросов).
+- **load_quiz** - загружает квиз целиком по quiz_id (включая вопросы и варианты ответов).
+- **grade_quiz** - Проверяет попытку прохождения квиза
 
 Инструменты вызываются только при необходимости и интегрированы через LangChain tools.
 
 ### Хранимые данные
-- history — история диалога в рамках сессии.
-- user_profile — предпочтения пользователя (язык, стек, стиль).
-- notes — полезные заметки и решения
+- history - история диалога в рамках сессии.
+- user_profile - предпочтения пользователя (язык, стек, стиль).
+- notes - полезные заметки и решения
+- quizzes - созданные квизы по теме 
 
 ### Реализация
 - Память хранится в memory/notes.json .
@@ -59,7 +66,7 @@ poetry install
 ```bash
 cp example.env .env
 ```
-Редактирование .env:
+Или можно вручную создать .env:
 ```ini
 OPENAI_API_BASE=http://localhost:8000/v1
 OPENAI_API_KEY=EMPTY
@@ -73,11 +80,11 @@ WORKSPACE_DIR=workspace
 ### 3. Запуск
 Интерактивный режим
 ```bash
-poetry run python demo_autonomous.py
+poetry run python src/main.py
 ```
 Демонстрационные эксперименты
 ```bash
-poetry run python main.py
+poetry run python demo_experiments.py
 ```
 ---
 ## Примеры использования
@@ -97,26 +104,37 @@ User: Спроектируй архитектуру REST API для сервис
 System:
  Router → Architecture Agent → Code Helper Agent
 ```
+### 3 - запрос квиза
+TODO
 
 ## Структура проекта
 ```
 programming_assistant/
 ├── src/
 │ ├── main.py
-│ ├── graph.py
-│ ├── state.py
+│ ├── graph.py # описание мультиагентного графа LangGraph, логика маршрутизации и handoff между агентами
+│ ├── state.py # описание общего State, передаваемого между агентами
 │ ├── agents/
-│ │ ├── router.py
-│ │ ├── code_helper.py
-│ │ └── architect.py
-│ └── tools.py
+│ │ ├── router.py # агент-маршрутизатор
+│ │ ├── code_helper.py # агент-помощник (анализ ошибок, генерация и исправление кода)
+│ │ ├── quiz.py # агент, который создаёт квиз по теме
+│ │ └── architect.py # агент для проектирования архитектуры
+│ ├── prompts/ # промпты для агентов
+│ │ ├── router_prompt.md 
+│ │ ├── helper_prompt.md 
+│ │ ├── architect_prompt.md 
+│ │ └── quiz_prompt.md 
+│ ├── tools/ # tools для агентов
+│ | ├── base_tools.py # набор инструментов для работы агентов
+│ | ├── base_tools.py # набор инструментов для работы квизового агента
+│ | └── transfer_tools.py # набор инструментов, отвечающих за маршрутизацию
 ├── docs/
 │ ├── architecture.md
-│ └── reflection.md
+│ └── reflection.md # рефлексия по результатам работы и экспериментов
 ├── memory/
-│ └── notes.json
+│ └── notes.json # сохранённые заметки и полезный контекст
 ├── workspace/
-├── demo_experiments.py
+├── demo_experiments.py # скрипт с экспериментами и демонстрационными запросами
 ├── pyproject.toml
 └── README.md
 ```
