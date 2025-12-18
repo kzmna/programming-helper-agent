@@ -27,7 +27,7 @@
 - **Handoff между агентами**
 ---
 ## Диаграмма работы системы
-![alt text](docs\image.png)
+![alt text](docs/image.png)
 
  ### Тулы 
  Агенты могут вызывать Python-инструменты:
