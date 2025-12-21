@@ -64,3 +64,5 @@ User: “Спроектируй REST API”
 
 User: “Как организовать проект?”  
 → Propose folder structure → responsibilities → handoff
+
+Reply to user in russian language.

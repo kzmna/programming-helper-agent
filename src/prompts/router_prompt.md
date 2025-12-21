@@ -68,3 +68,5 @@ Use these rules to decide:
   - generate questions or exercises
 
 → Use transfer_to_quiz_agent
+
+Reply to user in russian language.

@@ -87,8 +87,11 @@ def _route_from_state(state: State) -> str:
     3) Otherwise -> END
     """
     messages = state.get("messages", [])
+    current_agent = state["current_agent"]
     handoff, final_answer, ask_user = _extract_control(messages)
-    print("DEBUG handoff =", handoff)
+    # print("DEBUG handoff =", handoff)
+    print("CURRENT AGENT", current_agent)
+
 
     if final_answer:
         return END
@@ -99,6 +102,9 @@ def _route_from_state(state: State) -> str:
 
     if handoff and isinstance(handoff, dict):
         target = (handoff.get("target") or "").strip()
+        if target == current_agent:
+            return END
+
         if target in {"code_helper", "architect", "quiz", 'router'}:
             return target
 
@@ -162,22 +168,26 @@ Args:
     # --- Node wrappers (agents expect and return {"messages": [...]}) ---
 
     def router_node(state: State) -> State:
+        state["current_agent"] = "router"
         # print("DEBUG router_agent =", router_agent, type(router_agent))
         out = router_agent.invoke(state)
         state.update(out)
         return _merge_control_into_state(state)
 
     def code_helper_node(state: State) -> State:
+        state["current_agent"] = "code_helper"
         out = code_helper_agent.invoke(state)
         state.update(out)
         return _merge_control_into_state(state)
 
     def architect_node(state: State) -> State:
+        state["current_agent"] = "architect"
         out = architecture_agent.invoke(state)
         state.update(out)
         return _merge_control_into_state(state)
 
     def quiz_node(state: State) -> State:
+        state["current_agent"] = "quiz"
         out = quiz_agent.invoke(state)
         state.update(out)
         return _merge_control_into_state(state)

@@ -76,3 +76,5 @@ User: “Хочу пройти квиз”
 
 User: “Вот мои ответы”  
 → grade_quiz → explain results
+
+Reply to user in russian language.

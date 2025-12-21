@@ -41,3 +41,6 @@ class State(TypedDict, total=False):
 
     # Optional meta
     route: Optional[str]
+
+    # Current agent
+    current_agent: Optional[str]

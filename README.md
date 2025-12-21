@@ -1,10 +1,11 @@
 # Multi-Agent Programming Assistant
-Система для помощи в программировании. Система помогает анализировать код, объяснять ошибки, предлагать исправлен. Маршрутизатор решает кому передатьуправление.
+Система для помощи в программировании. Система помогает анализировать код, объяснять ошибки, предлагать исправлен. Маршрутизатор решает кому передатьуправление. <br>
+Рефлексия находится в папке docs.
 
 ## Общая информация
 ### Агенты
 1) **Router Agent (маршрутизатор)**
-- Классифицирует запрос: *код / архитектура / план / смешанный*.
+- Классифицирует запрос: *код / архитектура / квиз / смешанный*.
 - Решает, какому агенту передать управление.
 
 2) **Code Helper Agent (помощник по коду)**
@@ -23,7 +24,7 @@
 ## Паттерн мультиагентной системы
 Используемый паттерн:
 - **Router + специализированные агенты**
-- **Условный переход по графу (conditional routing)**
+- **Условный переход по графу**
 - **Handoff между агентами**
 ---
 ## Диаграмма работы системы
@@ -38,6 +39,7 @@
 - **search_notes(query)** - поиск по памяти.
 - **transfer_to_helper** - передача Code Helper Agent
 - **transfer_to_architecture** - передача rchitecture Agent
+- **transfer_to_quiz** - передача Quiz Agent
 - **list_quizzes** - показывает последние сохранённые квизы (id, тема, сложность, дата, количество вопросов).
 - **load_quiz** - загружает квиз целиком по quiz_id (включая вопросы и варианты ответов).
 - **grade_quiz** - Проверяет попытку прохождения квиза
@@ -70,7 +72,7 @@ cp example.env .env
 ```ini
 OPENAI_API_BASE=http://localhost:8000/v1
 OPENAI_API_KEY=EMPTY
-MODEL_NAME=qwen-7b
+MODEL_NAME='qwen3-32b'
 TEMPERATURE=0.3
 MAX_TOKENS=2048
 MAX_RECURSION_LIMIT=30
@@ -86,32 +88,12 @@ poetry run python src/main.py
 ```bash
 poetry run python demo_experiments.py
 ```
----
-## Примеры использования
-### 1 — анализ ошибки
-```python
-from src.main import ProgrammingAssistantSystem
-system = ProgrammingAssistantSystem()
-answer, trace = system.run(
- "У меня возникает TypeError при вызове функции. Вот traceback..."
-)
-print(answer)
-print(trace)
-```
-### 2 - архитектурный запрос
-```python
-User: Спроектируй архитектуру REST API для сервиса заметок.
-System:
- Router → Architecture Agent → Code Helper Agent
-```
-### 3 - запрос квиза
-TODO
 
 ## Структура проекта
 ```
 programming_assistant/
 ├── src/
-│ ├── main.py
+│ ├── main.py # Входная точка 
 │ ├── graph.py # описание мультиагентного графа LangGraph, логика маршрутизации и handoff между агентами
 │ ├── state.py # описание общего State, передаваемого между агентами
 │ ├── agents/
@@ -125,17 +107,18 @@ programming_assistant/
 │ │ ├── architect_prompt.md 
 │ │ └── quiz_prompt.md 
 │ ├── tools/ # tools для агентов
-│ | ├── base_tools.py # набор инструментов для работы агентов
+│ | ├── base_tools.py # набор инструментов для работы агентов (кроме квизного агента и трансферного)
 │ | ├── base_tools.py # набор инструментов для работы квизового агента
 │ | └── transfer_tools.py # набор инструментов, отвечающих за маршрутизацию
 ├── docs/
-│ ├── architecture.md
+│ ├── image.png # картинка логики архитектуры
 │ └── reflection.md # рефлексия по результатам работы и экспериментов
 ├── memory/
+│ ├── quizzes.json # сохранённые квизы
 │ └── notes.json # сохранённые заметки и полезный контекст
 ├── workspace/
 ├── demo_experiments.py # скрипт с экспериментами и демонстрационными запросами
-├── pyproject.toml
+├── pyproject.toml # зависимости для poetry
 └── README.md
 ```
 

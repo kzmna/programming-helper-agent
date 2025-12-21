@@ -82,3 +82,5 @@ User: “Как оптимизировать этот код?”
 
 User: “Реализуй архитектуру, которую предложили ранее”  
 → Implement → verify → respond
+
+Reply to user in russian language.
