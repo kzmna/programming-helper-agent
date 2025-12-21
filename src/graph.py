@@ -1,4 +1,4 @@
-from future import annotations
+# from future import annotations
 
 import json
 from typing import Any, Dict, Optional, Tuple
@@ -6,9 +6,10 @@ from typing import Any, Dict, Optional, Tuple
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import BaseMessage, ToolMessage
+from langchain_openai import ChatOpenAI
+from config import Config
 
 from src.state import State
-
 
 # ----------------------------
 # Helpers: parse handoff / completion from tool outputs
@@ -87,6 +88,7 @@ def _route_from_state(state: State) -> str:
     """
     messages = state.get("messages", [])
     handoff, final_answer, ask_user = _extract_control(messages)
+    print("DEBUG handoff =", handoff)
 
     if final_answer:
         return END
@@ -97,7 +99,7 @@ def _route_from_state(state: State) -> str:
 
     if handoff and isinstance(handoff, dict):
         target = (handoff.get("target") or "").strip()
-        if target in {"code_helper", "architect", "quiz"}:
+        if target in {"code_helper", "architect", "quiz", 'router'}:
             return target
 
     return END
@@ -146,13 +148,21 @@ Args:
         compiled LangGraph app
     """
 
-    checkpointer = MemorySaver()
+    # checkpointer = MemorySaver()
+    # llm = ChatOpenAI(
+    #     base_url=Config.OPENAI_API_BASE,
+    #     api_key=Config.OPENAI_API_KEY,
+    #     model=Config.MODEL_NAME,
+    #     temperature=Config.TEMPERATURE,
+    #     max_tokens=Config.MAX_TOKENS,
+    #     )
 
     graph = StateGraph(State)
 
     # --- Node wrappers (agents expect and return {"messages": [...]}) ---
 
     def router_node(state: State) -> State:
+        # print("DEBUG router_agent =", router_agent, type(router_agent))
         out = router_agent.invoke(state)
         state.update(out)
         return _merge_control_into_state(state)
@@ -227,4 +237,6 @@ Args:
         },
     )
 
-    return graph.compile(checkpointer=checkpointer)
+    return graph.compile(
+        # checkpointer=checkpointer, llm=llm
+        )

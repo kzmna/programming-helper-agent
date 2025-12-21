@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "programming-helper-agent"
+version = "0.1.0"
+description = "Мультиагентная система для помощи в программировании: объяснение ошибок кода, помощь с архитектурой проекта, а также создание квизов для закрепления материала"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [
+    {include = "src/agents"},
+    {include = "src/agents/tools"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+langgraph = "0.2.27"
+langchain-core = "^0.3.0"
+langchain-openai = "^0.2.0"
+langchain-community = "^0.3.0"
+pydantic = "^2.0.0"
+python-dotenv = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

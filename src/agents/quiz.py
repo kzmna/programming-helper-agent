@@ -5,14 +5,14 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 import os
 
-from tools.quiz_tools import (
+from .tools.quiz_tools import (
     create_quiz,
     list_quizzes,
     load_quiz,
     grade_quiz,
 )
 
-from tools.transfer_tools import (
+from .tools.transfer_tools import (
     complete_and_respond,
     ask_user_for_input,
     transfer_to_helper,
@@ -22,7 +22,7 @@ from tools.transfer_tools import (
 
 def load_system_prompt() -> str:
     """Load system prompt from file."""
-    prompt_path = os.path.join("prompts", "quiz_agent_prompt.md")
+    prompt_path = 'src/prompts/quiz_prompt.md'
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 

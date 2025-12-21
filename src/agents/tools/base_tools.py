@@ -11,7 +11,7 @@ These tools are designed for:
 All tools return JSON strings for consistent downstream parsing/logging.
 """
 
-from future import annotations
+# from future import annotations
 
 from langchain_core.tools import tool
 

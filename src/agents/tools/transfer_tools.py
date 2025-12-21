@@ -14,7 +14,7 @@ IMPORTANT:
 - graph.py extracts these JSON payloads from ToolMessage.content and routes accordingly.
 """
 
-from future import annotations
+# from future import annotations
 
 from langchain_core.tools import tool
 import json

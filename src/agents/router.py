@@ -5,7 +5,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 import os
 
-from tools.transfer_tools import (
+from .tools.transfer_tools import (
     transfer_to_helper,
     transfer_to_architecture,
     complete_and_respond,
@@ -15,7 +15,7 @@ from tools.transfer_tools import (
 
 def load_system_prompt() -> str:
     """Load system prompt from file."""
-    prompt_path = os.path.join("prompts", "router_agent_prompt.md")
+    prompt_path = 'src/prompts/router_prompt.md'
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -50,3 +50,4 @@ def create_router_agent(llm: ChatOpenAI, checkpointer):
         checkpointer=checkpointer,
         state_modifier=prompt,
     )
+

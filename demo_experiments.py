@@ -17,7 +17,7 @@ Run:
   poetry run python demo_experiments.py
 """
 
-from main import ProgrammingAssistantSystem
+from src.main import ProgrammingAssistantSystem
 
 print("=" * 80)
 print("🤖 Autonomous Multi-Agent Workflow Demo (Programming Assistant)")

@@ -5,7 +5,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 import os
 
-from tools.base_tools import (
+from .tools.base_tools import (
     calc,
     read_file,
     write_file,
@@ -14,7 +14,7 @@ from tools.base_tools import (
     linter,
 )
 
-from tools.transfer_tools import (
+from .tools.transfer_tools import (
     transfer_to_architecture,
     complete_and_respond,
     ask_user_for_input,
@@ -23,7 +23,7 @@ from tools.transfer_tools import (
 
 def load_system_prompt() -> str:
     """Load system prompt from file."""
-    prompt_path = os.path.join("prompts", "code_helper_agent_prompt.md")
+    prompt_path = 'src/prompts/helper_prompt.md'
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 

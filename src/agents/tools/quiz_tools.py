@@ -10,7 +10,7 @@ These tools are designed for the Quiz Agent:
 All tools return JSON strings for consistent logging/parsing in LangGraph.
 """
 
-from future import annotations
+# from future import annotations
 
 from langchain_core.tools import tool
 

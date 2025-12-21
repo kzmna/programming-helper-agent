@@ -27,6 +27,7 @@ should handle it next.
 Workflow Control (YOU DECIDE):
 - transfer_to_helper — send the task to the Code Helper Agent
 - transfer_to_architecture — send the task to the Architecture Agent
+- transfer_to_quiz_agent - send the task to Quiz Agent
 - complete_and_respond — respond directly if no further agent is needed
 - ask_user_for_input — ask the user for clarification if intent is unclear
 
@@ -66,4 +67,4 @@ Use these rules to decide:
   - practice a programming topic
   - generate questions or exercises
 
-→ Use transfer_to_quiz_agent (if available in the graph)
+→ Use transfer_to_quiz_agent

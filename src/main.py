@@ -8,7 +8,7 @@ This file mirrors the structure of the provided example:
 - Supports sync and async invocation
 
 Assumptions for your project:
-- create_system() is defined in src/graph.py and returns a compiled graph
+- build_graph() is defined in src/graph.py and returns a compiled graph
 - Config is defined in config.py with MAX_RECURSION_LIMIT
 - logger_config.py defines setup_logging(...) and log_system(...)
 """
@@ -19,15 +19,19 @@ from typing import Optional, Tuple
 
 from langchain_core.messages import HumanMessage, AIMessage
 
-from src.graph import create_system
+from src.graph import build_graph
+from src.agents import architect, code_helper, quiz, router
 from config import Config
 from logger_config import setup_logging, log_system
+from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import MemorySaver
+
 
 
 class ProgrammingAssistantSystem:
     """Main system class for the multi-agent programming assistant."""
 
-    def init(self, enable_logging: bool = True, log_level: str = "INFO"):
+    def __init__(self, enable_logging: bool = True, log_level: str = "INFO"):
         """Initialize the system.
 
         Args:
@@ -45,12 +49,22 @@ class ProgrammingAssistantSystem:
             log_system("=" * 80)
 
         # Create multi-agent system
+        self.llm = ChatOpenAI(
+        base_url=Config.OPENAI_API_BASE,
+        api_key=Config.OPENAI_API_KEY,
+        model=Config.MODEL_NAME,
+        temperature=Config.TEMPERATURE,
+        max_tokens=Config.MAX_TOKENS,
+        )
+    
+        self.checkpointer = MemorySaver()
         print("Creating multi-agent system...")
         log_system("🤖 Creating multi-agent system...")
-        self.graph = create_system()
+        self.graph = build_graph(router_agent=router.create_router_agent(checkpointer=self.checkpointer, llm=self.llm), code_helper_agent=code_helper.create_code_helper_agent(checkpointer=self.checkpointer, llm=self.llm), architecture_agent=architect.create_architecture_agent(checkpointer=self.checkpointer, llm=self.llm),quiz_agent=quiz.create_quiz_agent(checkpointer=self.checkpointer, llm=self.llm))
         log_system("✅ Multi-agent system ready")
 
         print("System ready!\n")
+
 
     def _extract_final_ai_response(self, result: dict) -> str:
         """
@@ -199,5 +213,5 @@ def main():
     return 0
 
 
-if name == "main":
+if __name__ == "__main__":
     raise SystemExit(main())
